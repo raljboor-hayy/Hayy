@@ -9,7 +9,12 @@ dotenv.config();
 const app = express();
 const prisma = new PrismaClient();
 
-app.use(cors());
+app.use(cors({
+  origin: '*', // Allow all domains for now (MVP-safe)
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 const JWT_SECRET = process.env.JWT_SECRET;
