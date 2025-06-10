@@ -1,3 +1,12 @@
+import { exec } from 'child_process';
+
+if (process.env.AUTO_PUSH === 'true') {
+  exec('npx prisma db push', (err, stdout, stderr) => {
+    if (err) console.error('Prisma push failed:', stderr);
+    else console.log('Prisma push successful:', stdout);
+  });
+}
+
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
