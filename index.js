@@ -1,5 +1,13 @@
 import { exec } from 'child_process';
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { PrismaClient } from '@prisma/client';
+import referralRoutes from './controllers/referralController.js'; // ✅ Add referral routes
 
+// Auto push Prisma schema if AUTO_PUSH is true
 if (process.env.AUTO_PUSH === 'true') {
   exec('npx prisma db push', (err, stdout, stderr) => {
     if (err) console.error('Prisma push failed:', stderr);
@@ -7,26 +15,20 @@ if (process.env.AUTO_PUSH === 'true') {
   });
 }
 
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import { PrismaClient } from '@prisma/client';
-
 dotenv.config();
 const app = express();
 const prisma = new PrismaClient();
 
 app.use(cors({
   origin: '*',
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
+// ======= AUTH ROUTES =======
 app.post('/signup', async (req, res) => {
   const { email, password, role } = req.body;
   const hash = await bcrypt.hash(password, 10);
@@ -65,4 +67,8 @@ app.get('/me', async (req, res) => {
   }
 });
 
+// ======= REFERRAL ROUTES =======
+app.use('/api', referralRoutes); // ✅ Mount referral endpoints
+
+// ======= START SERVER =======
 app.listen(3000, () => console.log('✅ Hayy backend running on port 3000'));
