@@ -1,15 +1,26 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
-  role     String
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      String
+  referralsSent     Referral[] @relation("ReferralsSent")
+  referralsReceived Referral[] @relation("ReferralsReceived")
+}
+
+model Referral {
+  id          String   @id @default(cuid())
+  message     String?
+  status      ReferralStatus @default(PENDING)
+  senderId    String
+  receiverId  String
+  sender      User     @relation("ReferralsSent", fields: [senderId], references: [id])
+  receiver    User     @relation("ReferralsReceived", fields: [receiverId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+enum ReferralStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
 }
