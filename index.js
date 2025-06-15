@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
-import referralRoutes from './controllers/referralController.js'; // ✅ Add referral routes
+import referralRoutes from './referralController.js'; // ✅ Add referral routes
 
 // Auto push Prisma schema if AUTO_PUSH is true
 if (process.env.AUTO_PUSH === 'true') {
